@@ -1,10 +1,12 @@
-#Oauth2 testing with Laravel
-
+# Oauth 2.0 Server Testing with Laravel
 ## Install
+0. Start by cloning the repo.
+
+`git@github.com:sighfin/oath2test.git && cd oauth2test`
 
 1. Create a database and fill out the `mysql` array in `app/config/database.php`.
 
-2. Run the following commands to setup the application and create all tables.
+2. Run the following commands to setup the application and migrate all needed tables.
 
 ```shell
 composer install
@@ -12,33 +14,35 @@ php artisan key:generate
 php artisan migrate
 ```
 
-3. Create a `user` on the `User` table.
+3. Create a new record on the `users` table. Please make note of the `username` and `password` values for later.
 
 ```php
 $user = new User;
-$user->username = 'kevin';
+$user->username = 'username';
 $user->password = Hash::make('password');
 $user->save();
 ```
 
-4. Create a new record on the `oauth-clients` table. Please make note of the `id` and `secret` values for later.
+4. Create a new record on the `oauth_clients` table. Please make note of the `id` and `secret` values for later.
+5. Create a new record on the `oauth_scopes` table. and set the `id` value to `basic` and add a `description`.
 
-## Endpoints
+## Testing Endpoints
+Create a `POST` request to this URI `http://domain.tld/oauth/access_token` with the following form data.
 
-Create a `POST` request to this uri `http://oauth-local.icstage.com/oauth/access_token` with the following form data.
 - grant_type = password
-- username = username on the users table
-- password = password on the users table
+- username = username on the `users` table
+- password = password on the `users` table
 - client_id = id on the `oauth_clients` table
 - client_secret = secret on the `oauth_clients` table
 
-Create a POST request to this uri http://oauth-local.icstage.com/api/v1/users and pass the `access_token` as the form data.
+When the request is successful, an `access_token` will be genereated and added to the `oauth_access_tokens` table. This `access token` is used as a data value when making API requests that requires authentication.
 
-Register
-POST - /api/v1/users/
+Create a `POST` request to this uri http://domain.tld/api/v1/users and pass the `access_token` as the form data.
 
-Login
+Create a `POST` request to this uri http://domain.tld/api/v1/register without any form data. This particular endpoint does not require authentication.
 
-Get the 'x' data
-GET - /api/v1/heartrate/12
-
+## Todos
+- Add code to request the `access token` again when it has been expired.
+- Delete oauth token from the `oauth_access_tokens` table if they've been expired and a client try to use it.
+- Add request limiting functionality to the public API endpoints.
+- Figure out a way to append `client_id` and `client_secret` values securely when the client makes a request for an access token.

@@ -16,10 +16,6 @@ class OAuthController extends Controller
         $this->beforeFilter('check-authorization-params', ['only' => ['getAuthorize', 'postAuthorize']]);
     }
 
-    public function hello() {
-        return 'hi';
-    }
-
     public function accessToken()
     {
          return Response::json($this->authorizer->issueAccessToken());

@@ -11,24 +11,18 @@
 |
 */
 
-// $user = new User;
-// $user->username = 'kevin';
-// $user->password = Hash::make('password');
-// $user->save();
-
+// login user manually
 // $user = User::find(1);
- // Auth::login($user);\
-
-
-// oauth access token generation
-Route::post('oauth/access_token', 'OAuthController@accessToken');
+// Auth::login($user);
 
 // api endpoint open to the public
 Route::post('api/v1/register', 'HomeController@postRegister');
 
+// oauth access token generation
+Route::post('oauth/access_token', 'OAuthController@accessToken');
+
 // api endpoints that requires the access token
 Route::group(array('before' => 'oauth'), function() {
-	// protected api endpoint
 	Route::resource('api/v1/users', 'UserController', array(
 		'except' => array('create', 'edit')
 		)
