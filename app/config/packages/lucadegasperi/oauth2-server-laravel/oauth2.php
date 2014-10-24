@@ -78,8 +78,18 @@ return [
         'password' => [
             'class' => '\League\OAuth2\Server\Grant\PasswordGrant',
             'callback' => function($username, $password) {
+                    $credentials = array(
+                              'username' => $username,
+                              'password' => $password,
+                          );
+                          $valid = Auth::validate($credentials);
 
-                // return an user ID if valid, otherwise return false
+                          if (!$valid) {
+                              return false;
+                          }
+
+                          return Auth::getProvider()->retrieveByCredentials($credentials)->id;
+                        // return an user ID if valid, otherwise return false
             },
             'access_token_ttl' => 3600
         ]
@@ -137,7 +147,7 @@ return [
     | The default scope to use if not present in the query string
     |
     */
-    'default_scope' => null,
+    'default_scope' => 'basic',
 
     /*
     |--------------------------------------------------------------------------
